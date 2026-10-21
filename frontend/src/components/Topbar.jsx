@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, Moon, Sun, Globe, Bell, Heart } from 'lucide-react';
 import { supportedLanguages } from '../i18n/translations';
@@ -11,6 +11,19 @@ export default function Topbar({
   showNotification
 }) {
   const { t, i18n } = useTranslation();
+  const [backendOnline, setBackendOnline] = useState(false);
+
+  useEffect(() => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://bestiverse-backend.onrender.com';
+    fetch(`${backendUrl}/api/health`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === 'ok') {
+          setBackendOnline(true);
+        }
+      })
+      .catch(() => setBackendOnline(false));
+  }, []);
 
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
@@ -85,9 +98,23 @@ export default function Topbar({
         </button>
 
         {/* Bestie Online Status */}
-        <div className="bestie-status-pill" title="Synchronized with your bestie space">
-          <span className="status-dot"></span>
-          <span>Bestie Online</span>
+        <div
+          className="bestie-status-pill"
+          title={backendOnline ? 'Connected to live Render backend cloud!' : 'Synchronized locally in browser'}
+          style={{
+            background: backendOnline ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 94, 151, 0.12)',
+            color: backendOnline ? 'var(--emerald)' : 'var(--primary-pink)',
+            borderColor: backendOnline ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 94, 151, 0.3)'
+          }}
+        >
+          <span
+            className="status-dot"
+            style={{
+              background: backendOnline ? 'var(--emerald)' : 'var(--primary-pink)',
+              boxShadow: backendOnline ? '0 0 8px var(--emerald)' : '0 0 8px var(--primary-pink)'
+            }}
+          ></span>
+          <span>{backendOnline ? 'Cloud Live 💖' : 'Bestie Online'}</span>
         </div>
       </div>
     </header>
