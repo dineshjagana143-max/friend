@@ -24,6 +24,20 @@ const io = new Server(server, {
   }
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    name: 'BestieVerse Backend Service 💖',
+    version: '1.0.0',
+    frontend: 'https://friend-chi-ecru.vercel.app',
+    endpoints: {
+      health: '/api/health'
+    },
+    message: 'BestieVerse Express & Socket.IO server is running smoothly! 🚀'
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
